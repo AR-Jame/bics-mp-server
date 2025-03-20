@@ -25,17 +25,19 @@ app.use(cookieParser())
 // db connection
 run();
 
+const { router: wisherRoute } = require('./routes/wisher.route')
 const { router: userRoute } = require('./routes/user.route');
-const wisherRoute = require('./routes/wisher.route')
 const wardnUnit = require('./routes/WardnUnit')
 const { router: jwtRoute } = require('./middlewares/jwt');
-const programRoute = require('./routes/Program')
+const { router: programRoute } = require('./routes/Program')
+const { router: supporterRoute } = require('./routes/supporter')
 
 app.use('/user', userRoute);
 app.use('/wisher', wisherRoute);
 app.use('/wardnunit', wardnUnit);
 app.use('/', jwtRoute);
 app.use('/program', programRoute);
+app.use('/supporter', supporterRoute)
 
 app.get('/', (req, res) => {
     res.send('alhamdulillah....');

@@ -25,7 +25,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 
   cloudinary.uploader.upload_stream(
     {
-      resource_type: 'auto',
+      resource_type: 'image',
       eager: [
         {
           width: 700,
@@ -288,29 +288,64 @@ router.get('/me/:email', verifyJWT, async (req, res) => {
 
 
 //update a user Profile
-router.put('/profile/:email', upload.none(), verifyJWT, async (req, res) => {
-  const { name, phone, email, level, institutionName, batch, group, workerDate, associateDate, memberDate, thana, ward, unit, responsibility } = req.body;
+router.patch('/profile/:email', upload.single('image'), verifyJWT, async (req, res) => {
+  const { prevImage, name, phone, email, level, institutionName, batch, group, workerDate, associateDate, memberDate, thana, ward, unit, responsibility } = req.body;
   const query = { email: req.params.email };
-  console.log(query);
-  const updatedDoc = {
-    $set: {
-      name: name,
-      phone: phone,
-      email: email,
-      level: level,
-      institutionName: institutionName,
-      batch: batch,
-      group: group,
-      workerDate: workerDate,
-      associateDate: associateDate,
-      memberDate: memberDate,
-      thana: thana,
-      ward: ward,
-      unit: unit,
-      responsibility: JSON.parse(responsibility),
-    }
+  let updatedData = {
+    name: name,
+    phone: phone,
+    email: email,
+    level: level,
+    institutionName: institutionName,
+    batch: batch,
+    group: group,
+    workerDate: workerDate,
+    associateDate: associateDate,
+    memberDate: memberDate,
+    thana: thana,
+    ward: ward,
+    unit: unit,
+    responsibility: JSON.parse(responsibility),
   }
-  const result = await userCollection.updateOne(query, updatedDoc);
+
+  // delete image & upload new image and update Db
+  if (req?.file?.buffer && prevImage) {
+    const publicId = prevImage
+      .split('/').slice(-2).join('/')
+      .replace(/\.[^.]+$/, '');
+
+    const destroyed = await cloudinary.uploader.destroy(publicId)
+    console.log(destroyed);
+
+    cloudinary.uploader.upload_stream(
+      {
+        resource_type: 'image',
+        eager: [
+          {
+            width: 700,
+            height: 700,
+            crop: "fill",
+            gravity: "auto",
+            quality: "auto",
+            fetch_format: "auto"
+          }
+        ]
+      },
+      async (err, result) => {
+        if (err) return res.status(501).send(err)
+        console.log(result);
+        updatedData = { ...updatedData, image: result.secure_url };
+        const response = await userCollection.updateOne(query, { $set: { ...updatedData } })
+        console.log(response)
+        res.send({ response, updatedImg: result.eager.secure_url })
+      }
+    ).end(req.file.buffer);
+
+    return
+  }
+
+  const result = await userCollection.updateOne(query, { $set: { ...updatedData } });
+  console.log(result);
   res.send(result);
 })
 
@@ -349,4 +384,4 @@ router.get('/delegate', verifyJWT, async (req, res) => {
 
 
 })
-module.exports = { router };
+module.exports = { router, userCollection };

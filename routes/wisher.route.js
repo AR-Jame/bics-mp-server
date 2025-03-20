@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const cron = require('node-cron')
 const { db } = require('../utils/dbconnect');
-const { ObjectId } = require('mongodb');
 
 const wisherCollection = db.collection('wishers');
+const { ObjectId } = require('mongodb');
 
 // get only initial info
 router.get('/', async (req, res) => {
@@ -123,22 +123,35 @@ router.put('/update/:id', async (req, res) => {
 
 // schedule that every month a new object is push in every single wisher
 cron.schedule('0 0 1 * *', async () => {
-    const wishers = await wisherCollection.find().toArray();
-    const currentMonth = date.toISOString().slice(0, 7);
-    console.log('time to update');
+    try {
+        const wishers = await wisherCollection.find().toArray();
+        const currentMonth = new Date().toISOString().slice(0, 7);
+        console.log('time to update');
 
-    for (const wisher of wishers) {
-        const newPayment = {
-            month: currentMonth,
-            amount: wisher.amount,
-            status: 'unpaid',
-            paidAt: ''
+        for (const wisher of wishers) {
+            const newPayment = {
+                month: currentMonth,
+                amount: wisher.amount,
+                status: 'unpaid',
+                paidAt: ''
+            }
+            await wisherCollection.updateOne(
+                { _id: new ObjectId(wisher._id) },
+                { $push: { payments: newPayment } }
+            )
         }
-        await wisherCollection.updateOne(
-            { _id: new ObjectId(wisher._id) },
-            { $push: { payments: newPayment } }
-        )
+    }catch(error){
+        console.log(error);
     }
 })
 
-module.exports = router;
+
+// delete  a wisher
+router.delete('/:id', async (req, res) => {
+    const id = req.params.id;
+    const result = await wisherCollection.deleteOne({ _id: new ObjectId(id) });
+    res.send(result);
+})
+
+
+module.exports = { wisherCollection, router };
