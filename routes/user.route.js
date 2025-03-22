@@ -131,10 +131,10 @@ router.put('/accept-req/:id', verifyJWT, async (req, res) => {
       <p>বাংলাদেশ ইসলামী ছাত্রশিবির, মাতুয়াইল পূর্ব থানার পক্ষ থেকে আপনাকে স্বাগতম।</p>
       <p>আপনার রেজিস্ট্রেশন সম্পন্ন করতে নিচের লিংকে ক্লিক করুন:</p>
 
-      <a href="http://localhost:5173/accept-req" class="button">রেজিস্ট্রেশন করুন</a>
+      <a href="https://bics-mp.web.app/accept-req" class="button">রেজিস্ট্রেশন করুন</a>
 
       <p class="footer">যদি উপরের বাটন কাজ না করে, অনুগ্রহ করে এই লিংকটি কপি করে ব্রাউজারে পেস্ট করুন:<br>
-      <a href="http://localhost:5173/accept-req">http://localhost:5173/accept-req</a></p>
+      <a href="https://bics-mp.web.app/accept-req">https://bics-mp.web.app/accept-req</a></p>
     </div>
 
   </body>
