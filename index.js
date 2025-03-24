@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 // global middleware
 app.use(cors({
     origin: [
-        // "http://localhost:5173",
+        "http://localhost:5173",
         "https://bics-mp.web.app"
     ],
     credentials: true,

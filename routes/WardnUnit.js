@@ -53,7 +53,7 @@ router.get('/details/:areaName', async (req, res) => {
     console.log(areaName, area);
 
     const newDate = new Date().toLocaleDateString();
-    const filter = { [area]: areaName }
+    const filter = { [area]: areaName, status: 'user' }
     const projection = { projection: { name: 1, level: 1 } }
     const users = await userCollection.find(filter, projection).toArray();
     const wishers = await wisherCollection?.find({ [area]: areaName }, { projection: { name: 1, phone: 1 } }).toArray();

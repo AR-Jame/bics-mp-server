@@ -8,7 +8,7 @@ const programCollection = db.collection('programs');
 
 router.get('/', async (req, res) => {
     const { areaName } = req.query;
-    const filter = { areaName: areaName }
+    const filter = { areaName: areaName, status: 'user' }
     const result = await programCollection.find(filter, { projection: { attendance: 0 } }).toArray();
     console.log(result);
     res.send(result)
