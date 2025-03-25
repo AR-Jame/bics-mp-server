@@ -279,7 +279,7 @@ router.get('/', verifyJWT, async (req, res) => {
 
 
 // get single user data or Profile
-router.get('/me/:email', verifyJWT, async (req, res) => {
+router.get('/me/:email', async (req, res) => {
   const email = req.params.email;
   const filter = { email: email };
   const data = await userCollection.findOne(filter);
@@ -378,10 +378,12 @@ router.get('/delegate', verifyJWT, async (req, res) => {
       query = { ...query, unit: areaName }
       break
   }
+})
 
 
 
-
-
+router.put('/temp', async (req, res) => {
+  const updatedDoc = await userCollection.updateMany({}, { $unset: { phoneticName: "" } })
+  res.send(updatedDoc)
 })
 module.exports = { router, userCollection };
