@@ -5,12 +5,20 @@ const { userCollection } = require('./user.route');
 const { ObjectId } = require('mongodb');
 const programCollection = db.collection('programs');
 
+async function createIndexes() {
+    try {
+        programCollection.createIndex({ areaName: 1 });
+        console.log("Indexes created successfully ✅");
+    } catch (error) {
+        console.error("Error creating indexes ❌", error);
+    }
+}
+
 
 router.get('/', async (req, res) => {
     const { areaName } = req.query;
-    const filter = { areaName: areaName, status: 'user' }
+    const filter = { areaName: areaName }
     const result = await programCollection.find(filter, { projection: { attendance: 0 } }).toArray();
-    console.log(result);
     res.send(result)
 })
 
@@ -65,4 +73,6 @@ router.get('/details/:id', async (req, res) => {
     const users = await userCollection.aggregate(pipeline).toArray();
     res.send({ users, program })
 })
+
+createIndexes()
 module.exports = { router, programCollection }

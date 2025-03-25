@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
             break
     }
 
-    console.log(key, areaName);
+    // console.log(key, areaName);
 
     const aggregate = [
         {
@@ -63,7 +63,7 @@ router.get('/', async (req, res) => {
 
     ]
     const result = await wisherCollection.aggregate(aggregate).toArray();
-    console.log(result);
+    // console.log(result);
     res.send(result)
 })
 
@@ -87,6 +87,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const id = req.params.id;
     const { month } = req.body;
+    console.log('from here', id, month );
     const date = new Date().toLocaleDateString('en-GB')
     const filter = { _id: new ObjectId(id), 'payments.month': month }
     const updatedDoc = {
@@ -140,7 +141,7 @@ cron.schedule('0 0 1 * *', async () => {
                 { $push: { payments: newPayment } }
             )
         }
-    }catch(error){
+    } catch (error) {
         console.log(error);
     }
 })

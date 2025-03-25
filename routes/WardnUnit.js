@@ -8,6 +8,15 @@ const { wisherCollection } = require('./wisher.route')
 const wardCollection = db.collection('wards');
 const unitCollection = db.collection('unit');
 
+async function createIndexes() {
+    try {
+        unitCollection.createIndex({ ward: 1 });
+        console.log("Indexes created successfully ✅");
+    } catch (error) {
+        console.error("Error creating indexes ❌", error);
+    }
+}
+
 // post a new ward
 router.post('/ward', async (req, res) => {
     const body = req.body;
@@ -71,6 +80,6 @@ router.get('/details/:areaName', async (req, res) => {
     res.send({ users, programs, wishers, areaData, units })
 })
 
-
+createIndexes();
 
 module.exports = router;

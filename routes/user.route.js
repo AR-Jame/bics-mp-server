@@ -12,7 +12,18 @@ const userCollection = db.collection('users');
 const transporter = require('../utils/BrevoConfig')
 const { verifyJWT } = require('../middlewares/jwt')
 
-
+async function createIndexes() {
+  try {
+    await userCollection.createIndex({ email: 1 });
+    await userCollection.createIndex({ status: 1 });
+    await userCollection.createIndex({ level: 1 });
+    await userCollection.createIndex({ area: 1 });
+    await userCollection.createIndex({ status: 1, level: 1, area: 1 });
+    console.log("Indexes created successfully ✅");
+  } catch (error) {
+    console.error("Error creating indexes ❌", error);
+  }
+}
 // post a new request with status pending
 router.post('/', upload.single('image'), async (req, res) => {
   const body = req.body;
@@ -386,4 +397,6 @@ router.put('/temp', async (req, res) => {
   const updatedDoc = await userCollection.updateMany({}, { $unset: { phoneticName: "" } })
   res.send(updatedDoc)
 })
+
+createIndexes()
 module.exports = { router, userCollection };
