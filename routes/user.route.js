@@ -292,8 +292,14 @@ router.get('/', verifyJWT, async (req, res) => {
 // get single user data or Profile
 router.get('/me/:email', async (req, res) => {
   const email = req.params.email;
+  const page = req.query.page;
+  let projection = {};
+  if (!projection) {
+    projection = { email: 1, thana: 1, ward: 1, unit: 1, image: 1, activeRole: 1 }
+  }
+  console.log(page);
   const filter = { email: email };
-  const data = await userCollection.findOne(filter);
+  const data = await userCollection.findOne(filter, { projection });
   res.send(data)
 })
 
