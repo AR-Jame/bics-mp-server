@@ -1,0 +1,29 @@
+name: Stop & Start Render Server
+
+on:
+  schedule:
+    - cron: "0 19 * * *"   # 1:00 AM BST (shutdown)
+    - cron: "0 22 * * *"   # 4:00 AM BST (start)
+
+jobs:
+  stop-server:
+    if: github.event.schedule == '0 19 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop Render Backend
+        run: |
+          curl -X POST "https://api.render.com/v1/services/srv-cve32rd2ng1s73ccqvog/scale" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"numInstances":0}'
+
+  start-server:
+    if: github.event.schedule == '0 22 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Render Backend
+        run: |
+          curl -X POST "https://api.render.com/v1/services/srv-cve32rd2ng1s73ccqvog/scale" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{"numInstances":1}'
