@@ -40,6 +40,7 @@ app.use('/program', programRoute);
 app.use('/supporter', supporterRoute)
 
 app.get('/', (req, res) => {
+    console.log('ping received at', new Date().toLocaleString());
     res.send('alhamdulillah....');
 })
 
